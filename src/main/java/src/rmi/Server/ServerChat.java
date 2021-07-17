@@ -8,13 +8,11 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
+import src.rmi.Room.RoomChat;
 import src.rmi.main.Constants;
 
-public class ServerChat extends UnicastRemoteObject implements IServerChat { 
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+@SuppressWarnings("serial")
+public class ServerChat extends UnicastRemoteObject implements IServerChat {
 	private ArrayList<String> roomList;
     
     public ServerChat() throws RemoteException {
@@ -30,7 +28,10 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
 
     public void createRoom (String roomName) throws RemoteException {
     	try {
+    		System.out.println("Criando sala");
+    		new RoomChat(roomName);
     		roomList.add(roomName);
+    		System.out.println(roomName + " criada");
     	} catch (Exception ex) {
     		System.out.println("Erro ao criar sala. " + ex);
     	}
@@ -41,7 +42,7 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
 			System.out.println("Criando RMI...");
 			Registry registry = LocateRegistry.createRegistry(Constants.PORT);
 			try {
-				registry.bind(Constants.SERVICE, new ServerChat());
+				registry.bind(Constants.SERVER, new ServerChat());
 				System.out.println("Servidor executando...");
 			} catch (AlreadyBoundException | AccessException ex) {
                 System.out.println("Erro ao criar o servidor: " + ex.getMessage());
