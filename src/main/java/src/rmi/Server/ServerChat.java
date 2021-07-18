@@ -1,6 +1,7 @@
 package src.rmi.Server;
 
 import java.rmi.AlreadyBoundException;
+import java.net.MalformedURLException;
 import java.rmi.AccessException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -15,11 +16,13 @@ import src.rmi.main.Constants;
 public class ServerChat extends UnicastRemoteObject implements IServerChat {
 	private ArrayList<String> roomList;
     
-    public ServerChat() throws RemoteException {
+    public ServerChat() throws RemoteException, MalformedURLException, AlreadyBoundException {
     	super();
     	roomList = new ArrayList<>();
-    	roomList.add("Os Manolitos");
-    	roomList.add("Os que odeiam SD");
+    	new RoomChat("Os Manolitos");
+    	roomList.add("Os-Manolitos");
+    	new RoomChat("Sala de Estudos");
+    	roomList.add("Sala-de-Estudos");
     }
     
     public ArrayList<String> getRooms() throws RemoteException {
@@ -28,9 +31,10 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
 
     public void createRoom (String roomName) throws RemoteException {
     	try {
-    		System.out.println("Criando sala");
+    		String roomId = roomName.replaceAll(" ", "-");
+    		System.out.println("Criando " + roomId);
     		new RoomChat(roomName);
-    		roomList.add(roomName);
+    		roomList.add(roomId);
     		System.out.println(roomName + " criada");
     	} catch (Exception ex) {
     		System.out.println("Erro ao criar sala. " + ex);
