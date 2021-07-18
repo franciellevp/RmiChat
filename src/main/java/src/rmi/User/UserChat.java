@@ -71,19 +71,20 @@ public class UserChat extends UnicastRemoteObject implements IUserChat {
             	choice = sc.nextInt();
             }
             
-            var list = Naming.list(Constants.URI);
+            /*var list = Naming.list(Constants.URI);
             for (var a : list)
-            	System.out.println(a);
+            	System.out.println(a);*/
             // choice - 1 é o indice da sala que a pessoa escolheu/clicou
             String roomname = serverApi.getRooms().get(choice - 1);
             IRoomChat roomApi = (IRoomChat) Naming.lookup(Constants.URI + roomname);
             roomApi.joinRoom(user.getUsername(), user);
             while (true) {  
 	            String msg = sc.nextLine();
+	            if (msg.equals("sair")) break;
 	            roomApi.sendMsg(user.getUsername(), msg);
 	        }
             // quando clica em algum botao de sair chama isso aqui:
-            //roomApi.leaveRoom(user.getUsername());
+            roomApi.leaveRoom(user.getUsername());
     	} catch (Exception ex) {
     		System.out.println("ERRO: O RMI do Cliente não está funcionando..." + ex.getMessage());
     	}

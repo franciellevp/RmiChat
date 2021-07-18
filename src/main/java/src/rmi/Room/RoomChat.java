@@ -3,6 +3,7 @@ package src.rmi.Room;
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
@@ -14,7 +15,8 @@ import src.rmi.main.Constants;
 @SuppressWarnings("serial")
 public class RoomChat extends UnicastRemoteObject implements IRoomChat {
     private Map<String, IUserChat> userList = new HashMap<>();
-    private String roomName;
+    private String name;
+    private String id;
     //private String msgReceived;
     
     
@@ -28,24 +30,24 @@ public class RoomChat extends UnicastRemoteObject implements IRoomChat {
 		this.userList = userList;
 	}
     
-    public RoomChat (String roomName) throws MalformedURLException, RemoteException, AlreadyBoundException {
+    public RoomChat (String roomName, String roomId) throws MalformedURLException, RemoteException, AlreadyBoundException {
 		super();
-		this.roomName = roomName;
-		roomName = roomName.replaceAll(" ", "-");
-		Naming.bind(Constants.URI + roomName, this);
+		this.name = roomName;
+		this.id = roomId;
+		Naming.bind(Constants.URI + this.id, this);
 	}
 
-	public void sendMsg (String usrName, String msg) throws RemoteException {
+	public synchronized void sendMsg (String usrName, String msg) throws RemoteException {
 		for (var entry : this.userList.entrySet()) {
-    		//String name = entry.getKey();
-	        IUserChat userKey = entry.getValue();
-	        userKey.deliverMsg(usrName, ": " + msg);
+			if (msg != null && !msg.isEmpty() && !usrName.equals(entry.getKey())) {
+		        IUserChat user = entry.getValue();
+		        user.deliverMsg(usrName, ": " + msg);
+			}
     	}
 	}
 
-    public void joinRoom (String usrName, IUserChat user) throws RemoteException {
+    public synchronized void joinRoom (String usrName, IUserChat user) throws RemoteException {
     	this.userList.putIfAbsent(usrName, user);
-    	System.out.println("nr de usuarios na sala " + this.userList.size());
     	for (var entry : this.userList.entrySet()) {
     		if (usrName != entry.getKey()) {
 		        IUserChat userKey = entry.getValue();
@@ -54,7 +56,7 @@ public class RoomChat extends UnicastRemoteObject implements IRoomChat {
     	}
     }
 
-    public void leaveRoom (String usrName) throws RemoteException {
+    public synchronized void leaveRoom (String usrName) throws RemoteException {
     	try {
     		this.userList.remove(usrName);
     		for (var entry : this.userList.entrySet()) {
@@ -66,9 +68,27 @@ public class RoomChat extends UnicastRemoteObject implements IRoomChat {
     	}
     }
 
-    public void closeRoom () throws RemoteException {}
+    public void closeRoom () throws RemoteException {
+    	for (var entry : this.userList.entrySet()) {
+	        IUserChat userKey = entry.getValue();
+	        userKey.deliverMsg("", "Sala fechada pelo servidor. Voce sera desconectado");
+    	}
+    	boolean r = UnicastRemoteObject.unexportObject(this, true);
+    	try {
+			Naming.unbind(Constants.URI + this.id);
+		} catch (RemoteException | MalformedURLException | NotBoundException ex) {
+			System.out.println("Erro ao dar unbind na sala. " + ex.getMessage());
+		}
+    	if (r)
+    		System.out.println("Sala fechada");
+    	this.userList.clear();
+    }
 
     public String getRoomName () throws RemoteException {
-    	return roomName;
+    	return name;
+    }
+    
+    public String getRoomId () throws RemoteException {
+    	return id;
     }
 }
