@@ -33,10 +33,10 @@ public class ListWindow  extends JFrame {
 	private JPanel panel = new JPanel();
 	private JPanel underPanel= new JPanel();
 	
-	private JButton joinBtn = new JButton("Entrar");
-	private JButton createBtn = new JButton("Criar sala");
+	public JButton joinBtn = new JButton("Entrar");
+	public JButton createBtn = new JButton("Criar sala");
 	
-	private int index = 0;
+	public int index = 0;
 	
 	public ListWindow(String title, ArrayList<String> rooms, int width, int height, UserChat user) {
 		String[] array = rooms.toArray(new String[0]);

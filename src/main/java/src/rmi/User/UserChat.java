@@ -15,6 +15,8 @@ import src.rmi.gui.ListWindow;
 import src.rmi.gui.LoginWindow;
 import src.rmi.main.Constants;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 @SuppressWarnings("serial")
@@ -59,6 +61,7 @@ public class UserChat extends UnicastRemoteObject implements IUserChat {
     	IServerChat serverApi = (IServerChat) Naming.lookup(Constants.URI + Constants.SERVER);
     	String roomname = serverApi.getRooms().get(idx);
         IRoomChat roomApi = (IRoomChat) Naming.lookup(Constants.URI + roomname);
+        roomApi.joinRoom(this.getUsername(), this);
     }
     
     public static void main(String[] args) throws Exception {
@@ -69,7 +72,18 @@ public class UserChat extends UnicastRemoteObject implements IUserChat {
 
 	        UserChat user = new UserChat();
 	        user.run(sc);
-	        new ListWindow("Lista de salas", serverApi.getRooms(), 300, 500, user);
+	        ListWindow window = new ListWindow("Lista de salas", serverApi.getRooms(), 300, 500, user);
+	        window.joinBtn.addActionListener((ActionListener) new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						user.userJoin(window.index);
+					} catch (IOException | NotBoundException e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
            
             System.out.println("0. Criar sala");
             System.out.println("Escolha uma sala:");
