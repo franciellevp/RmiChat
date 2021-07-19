@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -13,9 +14,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import src.rmi.Server.IServerChat;
+import src.rmi.User.UserChat;
+
 public class CreateRoomWindow extends JFrame {
 	
-	public CreateRoomWindow()
+	public CreateRoomWindow(IServerChat serverApi, UserChat user)
 	{
 		final JPanel grid = new JPanel(new FlowLayout());
 		final JButton btn = new JButton("Criar");
@@ -34,15 +38,30 @@ public class CreateRoomWindow extends JFrame {
 		grid.add(btn);
 		setSize(200, 200);
 		setVisible(true);
+		
+		field.addActionListener((ActionListener) new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					serverApi.createRoom(field.getText());
+					new ListWindow("Lista de salas", serverApi, 300, 500, user);
+				} catch (RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				dispose();
+			}
+		});
 
 		btn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//serverApi.createRoom(field.getText());
-				dispose();
+				
 			}
 		});
 		
 	}
+	
 }

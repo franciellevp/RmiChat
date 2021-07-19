@@ -62,6 +62,7 @@ public class UserChat extends UnicastRemoteObject implements IUserChat {
     	String roomname = serverApi.getRooms().get(idx);
         IRoomChat roomApi = (IRoomChat) Naming.lookup(Constants.URI + roomname);
         roomApi.joinRoom(this.getUsername(), this);
+        new ChatWindow(serverApi, roomApi, this);
     }
     
     public static void main(String[] args) throws Exception {
@@ -72,45 +73,8 @@ public class UserChat extends UnicastRemoteObject implements IUserChat {
 
 	        UserChat user = new UserChat();
 	        user.run(sc);
-	        ListWindow window = new ListWindow("Lista de salas", serverApi.getRooms(), 300, 500, user);
-	        window.joinBtn.addActionListener((ActionListener) new ActionListener() {
+	        ListWindow window = new ListWindow("Lista de salas", serverApi, 300, 500, user);
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					try {
-						user.userJoin(window.index);
-					} catch (IOException | NotBoundException e1) {
-						e1.printStackTrace();
-					}
-				}
-			});
-           
-            System.out.println("0. Criar sala");
-            System.out.println("Escolha uma sala:");
-            user.listRooms(serverApi);
-            int choice = Integer.parseInt(sc.nextLine());
-            
-            if (choice == 0) {
-            	String roomname = sc.nextLine();
-                serverApi.createRoom(roomname);
-                user.listRooms(serverApi);
-            	choice = sc.nextInt();
-            }
-            
-            /*var list = Naming.list(Constants.URI);
-            for (var a : list)
-            	System.out.println(a);*/
-            // choice - 1 é o indice da sala que a pessoa escolheu/clicou
-            String roomname = serverApi.getRooms().get(choice - 1);
-            IRoomChat roomApi = (IRoomChat) Naming.lookup(Constants.URI + roomname);
-            roomApi.joinRoom(user.getUsername(), user);
-            while (true) {  
-	            String msg = sc.nextLine();
-	            if (msg.equals("sair")) break;
-	            roomApi.sendMsg(user.getUsername(), msg);
-	        }
-            // quando clica em algum botao de sair chama isso aqui:
-            roomApi.leaveRoom(user.getUsername());
     	} catch (Exception ex) {
     		System.out.println("ERRO: O RMI do Cliente não está funcionando..." + ex.getMessage());
     	}

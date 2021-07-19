@@ -38,8 +38,8 @@ public class ListWindow  extends JFrame {
 	
 	public int index = 0;
 	
-	public ListWindow(String title, ArrayList<String> rooms, int width, int height, UserChat user) {
-		String[] array = rooms.toArray(new String[0]);
+	public ListWindow(String title, IServerChat serverApi, int width, int height, UserChat user) throws RemoteException {
+		String[] array = serverApi.getRooms().toArray(new String[0]);
 		list = new JList(array);
 		list.setSize(width / 2, height);
 		
@@ -67,6 +67,7 @@ public class ListWindow  extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					user.userJoin(index);
+					dispose();
 				} catch (IOException | NotBoundException e1) {
 					e1.printStackTrace();
 				}
@@ -77,7 +78,8 @@ public class ListWindow  extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new CreateRoomWindow();
+				new CreateRoomWindow(serverApi, user);
+				dispose();
 			}
 		});
 		
@@ -89,6 +91,8 @@ public class ListWindow  extends JFrame {
 			//panel.setBackground(Color.gray);
 			panel.add(content);
 			panel.add(joinBtn);
+			
+			setVisible(true);
 		});
 
 	}

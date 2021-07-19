@@ -41,6 +41,16 @@ public class LoginWindow extends JFrame{
 		grid.add(btn);
 		setSize(250, 150);
 		setVisible(true);
+		
+		field.addActionListener((ActionListener) new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				text = field.getText();
+				dispose();
+				trigger = true;
+			}
+		});
 
 		btn.addActionListener((ActionListener) new ActionListener() {
 

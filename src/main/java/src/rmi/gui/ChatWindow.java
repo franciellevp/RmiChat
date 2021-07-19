@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,24 +19,29 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import src.rmi.Room.IRoomChat;
+import src.rmi.Server.IServerChat;
+import src.rmi.User.UserChat;
+
 public class ChatWindow extends JFrame{
 
-	public ChatWindow() {
+	public ChatWindow(IServerChat serverApi, IRoomChat roomApi, UserChat user) {
 		final JPanel panel = new JPanel();
 		final JButton exitBtn = new JButton("Sair");
 		final JTextField field = new JTextField(10);
 		
-		List<String> myList = new ArrayList<>(10);
-		for (int index = 0; index < 20; index++) {
-		   myList.add("Name: " + "Mensagem");
-		}
+		List<String> messages = new ArrayList<>(100);
 		
-		final JList<String> list = new JList<String>(myList.toArray(new String[myList.size()]));
+		final JList<String> list = new JList();
+		
+		messages.add("Bem-vindo " + user.getUsername() + "!");
+		
+		list.setListData(messages.toArray(new String[messages.size()]));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(list);
 		list.setLayoutOrientation(JList.VERTICAL);
-		list.setBorder(BorderFactory.createEmptyBorder(0, 10, 500, 10));
+		list.setBorder(BorderFactory.createEmptyBorder(0, 0, 500, 10));
 		panel.add(scrollPane);
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -49,8 +55,8 @@ public class ChatWindow extends JFrame{
 		exitBtn.setAlignmentY(BOTTOM_ALIGNMENT);
 		exitBtn.setAlignmentX(CENTER_ALIGNMENT);
 
-		field.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-		field.setSize(700, 50);
+		field.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 10));
+		field.setSize(700, 20);
 		panel.add(field);
 		
 		panel.add(new JLabel(" "));
@@ -65,11 +71,33 @@ public class ChatWindow extends JFrame{
 		
 		setVisible(true);
 		
+		field.addActionListener((ActionListener) new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					roomApi.sendMsg(user.getUsername(), field.getText());
+					messages.add(user.getUsername() + ": " +  field.getText());
+					list.setListData(messages.toArray(new String[messages.size()]));
+					field.setText("");
+				} catch (RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		exitBtn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dispose();
+				try {
+					roomApi.leaveRoom(user.getUsername());
+					dispose();
+				} catch (RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}	
 			}
 		});
 		
