@@ -76,7 +76,7 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
 			};
 			
 			ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-			exec.scheduleAtFixedRate(closeRoom , 20, 20, TimeUnit.SECONDS);
+			exec.scheduleAtFixedRate(closeRoom , 20, 20, TimeUnit.MINUTES);
 		} catch(Exception ex) {
 			System.out.println("ERRO: Servidor RMI não conseguiu iniciar..." + ex.getMessage());
 		}

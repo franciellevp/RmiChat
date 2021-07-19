@@ -52,6 +52,7 @@ public class RoomChat extends UnicastRemoteObject implements IRoomChat {
     		if (usrName != entry.getKey()) {
 		        IUserChat userKey = entry.getValue();
 		        userKey.deliverMsg(usrName, "entrou na sala");
+		        System.out.println(usrName + "entrou na sala");
     		}
     	}
     }
