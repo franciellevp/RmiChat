@@ -38,12 +38,10 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
     public void createRoom (String roomName) throws RemoteException {
     	try {
     		String roomId = roomName.replaceAll(" ", "-");
-    		System.out.println("Criando " + roomId);
     		synchronized (roomList) {
     			new RoomChat(roomName, roomId);
     			roomList.add(roomId);
     		}
-    		System.out.println(roomName + " criada");
     	} catch (Exception ex) {
     		System.out.println("Erro ao criar sala. " + ex);
     	}
@@ -78,7 +76,7 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
 			ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
 			exec.scheduleAtFixedRate(closeRoom , 20, 20, TimeUnit.MINUTES);
 		} catch(Exception ex) {
-			System.out.println("ERRO: Servidor RMI não conseguiu iniciar..." + ex.getMessage());
+			System.out.println("ERRO: Servidor RMI nao conseguiu iniciar..." + ex.getMessage());
 		}
 	}
 }

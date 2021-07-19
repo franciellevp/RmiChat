@@ -36,7 +36,7 @@ public class RoomChat extends UnicastRemoteObject implements IRoomChat {
 		this.id = roomId;
 		Naming.bind(Constants.URI + this.id, this);
 	}
-
+    
 	public synchronized void sendMsg (String usrName, String msg) throws RemoteException {
 		for (var entry : this.userList.entrySet()) {
 			if (msg != null && !msg.isEmpty() && !usrName.equals(entry.getKey())) {
@@ -52,7 +52,6 @@ public class RoomChat extends UnicastRemoteObject implements IRoomChat {
     		if (usrName != entry.getKey()) {
 		        IUserChat userKey = entry.getValue();
 		        userKey.deliverMsg(usrName, " entrou na sala");
-		        System.out.println(usrName + " entrou na sala");
     		}
     	}
     }

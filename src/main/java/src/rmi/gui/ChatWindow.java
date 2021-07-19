@@ -1,13 +1,17 @@
 package src.rmi.gui;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -24,19 +28,20 @@ import src.rmi.Server.IServerChat;
 import src.rmi.User.UserChat;
 
 public class ChatWindow extends JFrame{
-
+	
+	final JPanel panel = new JPanel();
+	final JButton sendBtn = new JButton("Enviar");
+	final JButton exitBtn = new JButton("Sair");
+	final JTextField field = new JTextField(10);
+	private List<String> messages = new ArrayList<>();
+	final JList<String> list = new JList();
+	
 	public ChatWindow(IServerChat serverApi, IRoomChat roomApi, UserChat user) {
-		final JPanel panel = new JPanel();
-		final JButton exitBtn = new JButton("Sair");
-		final JTextField field = new JTextField(10);
-		
-		List<String> messages = new ArrayList<>(100);
-		
-		final JList<String> list = new JList();
-		
 		messages.add("Bem-vindo " + user.getUsername() + "!");
 		
 		list.setListData(messages.toArray(new String[messages.size()]));
+		
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportView(list);
@@ -51,14 +56,22 @@ public class ChatWindow extends JFrame{
 		
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		
+		sendBtn.setSize(40, 10);
+		sendBtn.setAlignmentY(BOTTOM_ALIGNMENT);
+		sendBtn.setAlignmentX(CENTER_ALIGNMENT);
+		sendBtn.setBackground(Color.green);
+		sendBtn.setOpaque(true);
+		
 		exitBtn.setSize(40, 10);
 		exitBtn.setAlignmentY(BOTTOM_ALIGNMENT);
 		exitBtn.setAlignmentX(CENTER_ALIGNMENT);
 
 		field.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 10));
 		field.setSize(700, 20);
-		panel.add(field);
+		panel.add(field);	
 		
+		panel.add(new JLabel(" "));
+		panel.add(sendBtn);
 		panel.add(new JLabel(" "));
 		panel.add(exitBtn);
 		panel.add(new JLabel(" "));
@@ -67,23 +80,22 @@ public class ChatWindow extends JFrame{
 
 		setSize(700, 700);
 		setLocationRelativeTo(null);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		
+
 		setVisible(true);
-		
+
 		field.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					roomApi.sendMsg(user.getUsername(), field.getText());
-					messages.add(user.getUsername() + ": " +  field.getText());
-					list.setListData(messages.toArray(new String[messages.size()]));
-					field.setText("");
-				} catch (RemoteException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+				sendMessage(roomApi, user);
+			}
+		});
+		
+		sendBtn.addActionListener((ActionListener) new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sendMessage(roomApi, user);
 			}
 		});
 		
@@ -93,6 +105,7 @@ public class ChatWindow extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				try {
 					roomApi.leaveRoom(user.getUsername());
+					new ListWindow("Lista de salas", serverApi, 300, 500, user);
 					dispose();
 				} catch (RemoteException e1) {
 					// TODO Auto-generated catch block
@@ -101,6 +114,28 @@ public class ChatWindow extends JFrame{
 			}
 		});
 		
+	}
+	
+	public void receiveMessage(String msg)
+	{
+		messages.add(msg);
+		list.setListData(messages.toArray(new String[messages.size()]));
+		setVisible(true);
+	}
+	
+	private void sendMessage(IRoomChat roomApi, UserChat user)
+	{
+		if(field.getText().isBlank()) {return;}
+		try {
+			roomApi.sendMsg(user.getUsername(), field.getText());
+			messages.add(user.getUsername() + ": " +  field.getText());
+			list.setListData(messages.toArray(new String[messages.size()]));
+			field.setText("");
+			setVisible(true);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 }

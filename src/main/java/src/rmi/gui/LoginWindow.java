@@ -17,22 +17,18 @@ public class LoginWindow extends JFrame{
 
 	private String text;
 	private boolean trigger = false;
-	
-	public LoginWindow() {
-		
-	}
+	final JPanel grid = new JPanel(new FlowLayout());
+	final JButton btn = new JButton("Entrar");
+	JTextField field = new JTextField(10);
 	
 	public String Login()
 	{
-		final JPanel grid = new JPanel(new FlowLayout());
-		final JButton btn = new JButton("Ok");
-		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		grid.setBorder(BorderFactory.createEmptyBorder(35, 10, 10, 10));
-		JTextField field = new JTextField(10);
+	
 		setTitle("Inserir nome");
 		setLocationRelativeTo(null);
 		add(grid);
@@ -46,9 +42,7 @@ public class LoginWindow extends JFrame{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				text = field.getText();
-				dispose();
-				trigger = true;
+				SignUp();
 			}
 		});
 
@@ -56,9 +50,7 @@ public class LoginWindow extends JFrame{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				text = field.getText();
-				dispose();
-				trigger = true;
+				SignUp();
 			}
 		});
 		
@@ -67,6 +59,13 @@ public class LoginWindow extends JFrame{
 		} while (text == null);
 
 		return text;
+	}
+	
+	private void SignUp()
+	{
+		text = field.getText();
+		dispose();
+		trigger = true;
 	}
 
 }

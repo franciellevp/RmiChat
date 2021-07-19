@@ -11,6 +11,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -21,6 +24,7 @@ import javax.swing.JPanel;
 
 import src.rmi.Room.IRoomChat;
 import src.rmi.Server.IServerChat;
+import src.rmi.User.IUserChat;
 import src.rmi.User.UserChat;
 import src.rmi.main.Constants;
 
@@ -34,21 +38,25 @@ public class ListWindow  extends JFrame {
 	private JPanel underPanel= new JPanel();
 	
 	public JButton joinBtn = new JButton("Entrar");
+	public JButton refreshBtn = new JButton("Atualizar lista");
 	public JButton createBtn = new JButton("Criar sala");
+	private String[] array;
 	
 	public int index = 0;
 	
 	public ListWindow(String title, IServerChat serverApi, int width, int height, UserChat user) throws RemoteException {
-		String[] array = serverApi.getRooms().toArray(new String[0]);
-		list = new JList(array);
+		array = serverApi.getRooms().toArray(new String[0]);
+		list = new JList();
+		list.setListData(array);
 		list.setSize(width / 2, height);
 		
 		panel.setSize(50,50);
 		panel.setBorder(BorderFactory.createEmptyBorder(130, 20, 20, 50));
 		
 		underPanel.setBackground(Color.gray);
-		underPanel.setSize(width, 50);
-		underPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		underPanel.setSize(width, 70);
+		underPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 50, 40));
+		underPanel.add(refreshBtn);
 		underPanel.add(createBtn);
 		
 		add(BorderLayout.WEST, list);
@@ -83,6 +91,19 @@ public class ListWindow  extends JFrame {
 			}
 		});
 		
+		refreshBtn.addActionListener((ActionListener) new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					refresh(serverApi, user);
+				} catch (RemoteException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		list.addListSelectionListener(e -> {
 			index = list.getSelectedIndex();
 			String selected = array[index];
@@ -91,10 +112,17 @@ public class ListWindow  extends JFrame {
 			//panel.setBackground(Color.gray);
 			panel.add(content);
 			panel.add(joinBtn);
-			
+
 			setVisible(true);
 		});
 
 	}
 
+	public void refresh(IServerChat serverApi, UserChat user) throws RemoteException
+	{
+		new ListWindow("Lista de salas", serverApi, 300, 500, user);
+		
+		dispose();
+	}
+	
 }
