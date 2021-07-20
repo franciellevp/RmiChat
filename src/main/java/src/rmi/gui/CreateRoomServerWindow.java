@@ -16,7 +16,6 @@ import javax.swing.JTextField;
 
 import src.rmi.Server.IServerChat;
 import src.rmi.Server.ServerChat;
-import src.rmi.User.UserChat;
 
 // janela para insercao de nome da sala pelo servidor
 

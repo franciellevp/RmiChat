@@ -12,7 +12,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 import src.rmi.Room.RoomChat;
-import src.rmi.User.UserChat;
 import src.rmi.gui.ServerWindow;
 import src.rmi.utils.Constants;
 

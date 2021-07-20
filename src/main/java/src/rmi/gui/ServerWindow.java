@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import src.rmi.Room.IRoomChat;
 import src.rmi.Server.IServerChat;
 import src.rmi.Server.ServerChat;
-import src.rmi.User.UserChat;
 import src.rmi.utils.Constants;
 
 // exibe a lista de salas do servidor
