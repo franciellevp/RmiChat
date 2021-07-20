@@ -23,12 +23,14 @@ import src.rmi.Room.IRoomChat;
 import src.rmi.Server.IServerChat;
 import src.rmi.User.UserChat;
 
+// janela de bate-papo
+
 @SuppressWarnings("serial")
 public class ChatWindow extends JFrame{
 	
 	final JPanel panel = new JPanel();
 	final JButton sendBtn = new JButton("Enviar");
-	final JButton exitBtn = new JButton("Sair");
+	final JButton exitBtn = new JButton("Sair da sala");
 	final JTextField field = new JTextField(10);
 	private List<String> messages = new ArrayList<>();
 	final JList<String> list = new JList<String>();
@@ -80,6 +82,7 @@ public class ChatWindow extends JFrame{
 
 		setVisible(true);
 
+		// envia a mensagem ao teclar enter
 		field.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
@@ -88,6 +91,7 @@ public class ChatWindow extends JFrame{
 			}
 		});
 		
+		// envia a mensagem ao clicar no botao de enviar
 		sendBtn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
@@ -96,22 +100,30 @@ public class ChatWindow extends JFrame{
 			}
 		});
 		
+		// sai da sala ao clicar no botao de sair
 		exitBtn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					roomApi.leaveRoom(user.getUsername());
-					new ListWindow("Lista de salas", serverApi, 300, 500, user);
+					roomApi.leaveRoom(user.getUsername()); // remove este usuario da sala
+					new ListWindow("Lista de salas", serverApi, 300, 500, user); // exibe a lista de salas novamente
+					dispose(); // fecha essa janela
+				} catch (RemoteException e1) { // caso a sala ja tenha sido fechada pelo servidor
+					try {
+						new ListWindow("Lista de salas", serverApi, 300, 500, user); // apenas exibe a lista de salas novamente
+					} catch (RemoteException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
 					dispose();
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
 				}	
 			}
 		});
 		
 	}
 	
+	// recebe uma nova mensagem e adiciona na lista de mensagens
 	public void receiveMessage(String msg)
 	{
 		messages.add(msg);
@@ -119,15 +131,16 @@ public class ChatWindow extends JFrame{
 		setVisible(true);
 	}
 	
+	// envia uma mensagem
 	private void sendMessage(IRoomChat roomApi, UserChat user)
 	{
-		if(field.getText().isBlank()) {return;}
+		if(field.getText().isBlank()) {return;} // nao envia caso nao tenha nada digitado
 		try {
-			roomApi.sendMsg(user.getUsername(), field.getText());
-			messages.add(user.getUsername() + ": " +  field.getText());
-			list.setListData(messages.toArray(new String[messages.size()]));
-			field.setText("");
-			setVisible(true);
+			roomApi.sendMsg(user.getUsername(), field.getText()); // envia a mensagem
+			messages.add(user.getUsername() + ": " +  field.getText()); // adiciona a mensagem na lista
+			list.setListData(messages.toArray(new String[messages.size()])); // atualiza a lista
+			field.setText(""); // limpa o campo de texto
+			setVisible(true); // atualiza a tela
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 		}

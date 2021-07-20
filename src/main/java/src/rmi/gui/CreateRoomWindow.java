@@ -17,6 +17,8 @@ import javax.swing.JTextField;
 import src.rmi.Server.IServerChat;
 import src.rmi.User.UserChat;
 
+//janela para insercao de nome da sala pelo usuario
+
 @SuppressWarnings("serial")
 public class CreateRoomWindow extends JFrame {
 	
@@ -41,6 +43,7 @@ public class CreateRoomWindow extends JFrame {
 		setSize(200, 200);
 		setVisible(true);
 		
+		// listener do campo ao teclar enter
 		field.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
@@ -49,6 +52,7 @@ public class CreateRoomWindow extends JFrame {
 			}
 		});
 
+		// listener do botao de criar sala
 		btn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
@@ -59,13 +63,14 @@ public class CreateRoomWindow extends JFrame {
 		
 	}
 	
+	// cria uma nova sala
 	private void Create(IServerChat serverApi, UserChat user)
 	{
 		try {
-			serverApi.createRoom(field.getText());
-			new ListWindow("Lista de salas", serverApi, 300, 500, user);
+			serverApi.createRoom(field.getText()); // solicita ao server uma nova sala
+			new ListWindow("Lista de salas", serverApi, 300, 500, user); // atualiza a tela
 			
-			dispose();
+			dispose(); // fecha a janela
 		} catch (RemoteException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

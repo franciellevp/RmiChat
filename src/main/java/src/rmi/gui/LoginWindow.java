@@ -13,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+// janela de insercao de nome de usuario
+
 @SuppressWarnings("serial")
 public class LoginWindow extends JFrame{
 
@@ -39,6 +41,7 @@ public class LoginWindow extends JFrame{
 		setSize(250, 150);
 		setVisible(true);
 		
+		// listener da tecla enter
 		field.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
@@ -47,6 +50,7 @@ public class LoginWindow extends JFrame{
 			}
 		});
 
+		// listener do botao
 		btn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
@@ -55,11 +59,12 @@ public class LoginWindow extends JFrame{
 			}
 		});
 		
+		// aguarda a insercao de um nome para continuar
 		do {
 			setVisible(true);
 		} while (text == null);
 
-		return text;
+		return text; // retorna o nome do usuario
 	}
 	
 	private void SignUp()

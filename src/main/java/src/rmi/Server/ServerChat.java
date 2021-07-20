@@ -1,6 +1,8 @@
 package src.rmi.Server;
 
 import java.rmi.AlreadyBoundException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
 import java.rmi.AccessException;
 import java.rmi.RemoteException;
@@ -10,6 +12,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 import src.rmi.Room.RoomChat;
+import src.rmi.User.UserChat;
+import src.rmi.gui.ServerWindow;
 import src.rmi.utils.Constants;
 
 /**
@@ -28,8 +32,9 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
 	 * @throws RemoteException lida com as excecoes de metodos remotos
 	 * @throws MalformedURLException lida com as excecoes de metodos remotos relacionados a URI
 	 * @throws AlreadyBoundException lida com as excecoes relacionadas a criacao de uma referencia
+	 * @throws NotBoundException 
 	 */
-    public ServerChat() throws RemoteException, MalformedURLException, AlreadyBoundException {
+    public ServerChat() throws RemoteException, MalformedURLException, AlreadyBoundException, NotBoundException {
     	super();
     	roomList = new ArrayList<>();
     	new RoomChat("Os Manolitos", "Os-Manolitos");
@@ -38,6 +43,11 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
     	roomList.add("Sala-de-Estudos");
     }
     
+    // Remove o nome de uma sala da lista de salas
+    public void removeRoom(String roomName)
+    {
+    	roomList.remove(roomName);
+    }
     
     /**
 	 * Retorna todas as salas existentes
@@ -64,6 +74,7 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
     		System.out.println("Erro ao criar sala. " + ex);
     	}
 	}
+
     
     /**
      * Cria o registro RMI e inicia o servidor
@@ -79,6 +90,8 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
 			try {
 				registry.bind(Constants.SERVER, server);
 				System.out.println("Servidor executando...");
+				IServerChat serverApi = (IServerChat) Naming.lookup(Constants.URI + Constants.SERVER);
+		    	new ServerWindow("Controle do servidor", serverApi, 300, 500, server);
 			} catch (AlreadyBoundException | AccessException ex) {
                 System.out.println("Erro ao criar o servidor: " + ex.getMessage());
                 return;

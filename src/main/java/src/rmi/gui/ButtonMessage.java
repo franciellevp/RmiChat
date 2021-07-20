@@ -12,6 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+// Exibe a mensagem de boas-vindas com o botao de continuar para o usuario
+
 @SuppressWarnings("serial")
 public class ButtonMessage extends JFrame {
 	
@@ -43,15 +45,18 @@ public class ButtonMessage extends JFrame {
 		
 		setVisible(true);
 		
+		// Listener do botao de continuar
 		btn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// Fecha a janelinha e permite continuar
 				trigger = true;
 				dispose();
 			}
 		});
 		
+		// Espera o click do botao para exibir a lista de salas
 		do {
 			setVisible(true);
 		} while (!trigger);

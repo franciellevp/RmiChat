@@ -17,6 +17,8 @@ import javax.swing.JPanel;
 import src.rmi.Server.IServerChat;
 import src.rmi.User.UserChat;
 
+// exibe a lista de salas para o usuario
+
 @SuppressWarnings("serial")
 public class ListWindow  extends JFrame {
 
@@ -57,11 +59,13 @@ public class ListWindow  extends JFrame {
 		setLocationRelativeTo(null);
 		setVisible(true);
 
+		// listener do botao de entrar numa sala
 		joinBtn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
+					// chama um metodo na UserChat para que ele entre numa sala
 					user.userJoin(index);
 					dispose();
 				} catch (IOException | NotBoundException e1) {
@@ -70,15 +74,18 @@ public class ListWindow  extends JFrame {
 			}
 		});
 		
+		// listener do botao de criar uma sala
 		createBtn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				// abre a janela de insercao de nome de sala
 				new CreateRoomWindow(serverApi, user);
 				dispose();
 			}
 		});
 		
+		// listener do botao de atualizar a lista de salas
 		refreshBtn.addActionListener((ActionListener) new ActionListener() {
 
 			@Override
@@ -92,12 +99,14 @@ public class ListWindow  extends JFrame {
 			}
 		});
 		
+		// listener de selecao de sala
 		list.addListSelectionListener(e -> {
 			index = list.getSelectedIndex();
 			String selected = array[index];
 
-			content.setText(selected);
-			//panel.setBackground(Color.gray);
+			// atualiza o nome da sala selecionada na UI
+			content.setText(selected); 
+			// exibe o nome da sala e o botao de entrar
 			panel.add(content);
 			panel.add(joinBtn);
 
@@ -108,6 +117,7 @@ public class ListWindow  extends JFrame {
 
 	public void refresh(IServerChat serverApi, UserChat user) throws RemoteException
 	{
+		// abre a janela novamente, exibindo uma lista atualizada
 		new ListWindow("Lista de salas", serverApi, 300, 500, user);
 		
 		dispose();
