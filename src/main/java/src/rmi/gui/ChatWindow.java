@@ -1,17 +1,13 @@
 package src.rmi.gui;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -27,6 +23,7 @@ import src.rmi.Room.IRoomChat;
 import src.rmi.Server.IServerChat;
 import src.rmi.User.UserChat;
 
+@SuppressWarnings("serial")
 public class ChatWindow extends JFrame{
 	
 	final JPanel panel = new JPanel();
@@ -34,7 +31,7 @@ public class ChatWindow extends JFrame{
 	final JButton exitBtn = new JButton("Sair");
 	final JTextField field = new JTextField(10);
 	private List<String> messages = new ArrayList<>();
-	final JList<String> list = new JList();
+	final JList<String> list = new JList<String>();
 	
 	public ChatWindow(IServerChat serverApi, IRoomChat roomApi, UserChat user) {
 		messages.add("Bem-vindo " + user.getUsername() + "!");
@@ -108,7 +105,6 @@ public class ChatWindow extends JFrame{
 					new ListWindow("Lista de salas", serverApi, 300, 500, user);
 					dispose();
 				} catch (RemoteException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}	
 			}
@@ -133,7 +129,6 @@ public class ChatWindow extends JFrame{
 			field.setText("");
 			setVisible(true);
 		} catch (RemoteException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}

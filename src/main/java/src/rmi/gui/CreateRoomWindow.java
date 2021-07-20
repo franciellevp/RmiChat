@@ -5,7 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 
 import javax.swing.BorderFactory;
@@ -15,13 +14,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import src.rmi.Room.IRoomChat;
-import src.rmi.Room.RoomChat;
 import src.rmi.Server.IServerChat;
-import src.rmi.User.IUserChat;
 import src.rmi.User.UserChat;
-import src.rmi.main.Constants;
 
+@SuppressWarnings("serial")
 public class CreateRoomWindow extends JFrame {
 	
 	final JPanel grid = new JPanel(new FlowLayout());

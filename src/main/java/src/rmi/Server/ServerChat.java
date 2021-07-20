@@ -1,8 +1,6 @@
 package src.rmi.Server;
 
 import java.rmi.AlreadyBoundException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.net.MalformedURLException;
 import java.rmi.AccessException;
 import java.rmi.RemoteException;
@@ -10,18 +8,27 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-import src.rmi.Room.IRoomChat;
 import src.rmi.Room.RoomChat;
-import src.rmi.main.Constants;
+import src.rmi.utils.Constants;
 
+/**
+ * Classe com todas as operacoes que o servidor consegue realizar
+ */
 @SuppressWarnings("serial")
 public class ServerChat extends UnicastRemoteObject implements IServerChat {
+	
+	/**
+	 * lista contendo o nome das salas existentes
+	 */
 	private ArrayList<String> roomList;
     
+	/**
+	 * Construtor que exporta um objeto e instancia as salas iniciais
+	 * @throws RemoteException lida com as excecoes de metodos remotos
+	 * @throws MalformedURLException lida com as excecoes de metodos remotos relacionados a URI
+	 * @throws AlreadyBoundException lida com as excecoes relacionadas a criacao de uma referencia
+	 */
     public ServerChat() throws RemoteException, MalformedURLException, AlreadyBoundException {
     	super();
     	roomList = new ArrayList<>();
@@ -31,10 +38,21 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
     	roomList.add("Sala-de-Estudos");
     }
     
+    
+    /**
+	 * Retorna todas as salas existentes
+	 * @return uma lista contendo o Id das salas
+	 * @throws RemoteException lida com as excecoes de metodos remotos
+	 */
     public ArrayList<String> getRooms() throws RemoteException {
 		return roomList;
 	}
 
+    /**
+     * Cria uma nova sala
+     * @param roomName o nome da sala a ser criada
+     * @throws RemoteException lida com as excecoes de metodos remotos
+     */
     public void createRoom (String roomName) throws RemoteException {
     	try {
     		String roomId = roomName.replaceAll(" ", "-");
@@ -47,6 +65,12 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
     	}
 	}
     
+    /**
+     * Cria o registro RMI e inicia o servidor
+     * @param args possiveis argumentos passados como parametro
+     * @throws RemoteException lida com as excecoes de metodos remotos
+     * @throws AlreadyBoundException lida com as excecoes relacionadas a criacao de uma referencia
+     */
     public static void main(String[] args) throws RemoteException, AlreadyBoundException {
 		try {
 			System.out.println("Criando RMI...");
@@ -59,22 +83,6 @@ public class ServerChat extends UnicastRemoteObject implements IServerChat {
                 System.out.println("Erro ao criar o servidor: " + ex.getMessage());
                 return;
             }
-			Runnable closeRoom = new Runnable() {
-			    public void run() {
-					try {
-						String roomId = null;
-						roomId = server.roomList.get(0);
-						IRoomChat roomApi = (IRoomChat) Naming.lookup(Constants.URI + roomId);
-						roomApi.closeRoom();
-						server.roomList.remove(roomId);
-					} catch (MalformedURLException | RemoteException | NotBoundException ex) {
-						System.out.println("Erro ao acessar sala para fecha-la. " + ex.getMessage());
-					}
-			    }
-			};
-			
-			ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-			exec.scheduleAtFixedRate(closeRoom , 20, 20, TimeUnit.MINUTES);
 		} catch(Exception ex) {
 			System.out.println("ERRO: Servidor RMI nao conseguiu iniciar..." + ex.getMessage());
 		}

@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
+@SuppressWarnings("serial")
 public class TextMessage extends JFrame {
 
 	public TextMessage(String title, String text, int width, int height){

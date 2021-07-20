@@ -5,16 +5,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,17 +14,13 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
-import src.rmi.Room.IRoomChat;
 import src.rmi.Server.IServerChat;
-import src.rmi.User.IUserChat;
 import src.rmi.User.UserChat;
-import src.rmi.main.Constants;
 
-import java.rmi.server.UnicastRemoteObject;
-
+@SuppressWarnings("serial")
 public class ListWindow  extends JFrame {
 
-	private JList list;
+	private JList<Object> list;
 	private JLabel content = new JLabel();
 	private JPanel panel = new JPanel();
 	private JPanel underPanel= new JPanel();
@@ -46,7 +34,7 @@ public class ListWindow  extends JFrame {
 	
 	public ListWindow(String title, IServerChat serverApi, int width, int height, UserChat user) throws RemoteException {
 		array = serverApi.getRooms().toArray(new String[0]);
-		list = new JList();
+		list = new JList<Object>();
 		list.setListData(array);
 		list.setSize(width / 2, height);
 		

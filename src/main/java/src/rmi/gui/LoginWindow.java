@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+@SuppressWarnings("serial")
 public class LoginWindow extends JFrame{
 
 	private String text;
@@ -65,7 +66,15 @@ public class LoginWindow extends JFrame{
 	{
 		text = field.getText();
 		dispose();
-		trigger = true;
+		setTrigger(true);
+	}
+
+	public boolean isTrigger() {
+		return trigger;
+	}
+
+	public void setTrigger(boolean trigger) {
+		this.trigger = trigger;
 	}
 
 }
